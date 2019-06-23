@@ -5,7 +5,7 @@ from PIL import Image
 import pyzbar.pyzbar as pyzbar
 import requests
 
-while(True)
+while(True):
     stream = io.BytesIO()
     with picamera.PiCamera() as camera:
         camera.start_preview()
@@ -19,11 +19,20 @@ while(True)
     #
     # create a reader
     texts = pyzbar.decode(pil)
-    for text in texts:
-    tt = text.data.decode("utf-8")
-    print(tt)
+    if len(texts) == 0:
+        print('NO QRcode!')
+    else:
+        for text in texts:
+            tt = text.data.decode("utf-8")
+            print(tt)
+            r = requests.get('http://' + tt)
+            print('status = ', r.status_code)
+            if r.status_code == requests.codes.ok:
+                print("OK")
+            print('text = ', r.text)
 
     # clean up
-    del(image)
+    del(pil)
     camera.close()
+    del(camera)
 
